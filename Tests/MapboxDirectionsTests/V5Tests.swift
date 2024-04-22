@@ -1,12 +1,15 @@
 import XCTest
-#if !SWIFT_PACKAGE
+#if !os(Linux)
 import OHHTTPStubs
+#if SWIFT_PACKAGE
+import OHHTTPStubsSwift
+#endif
 import Polyline
 @testable import MapboxDirections
 
 class V5Tests: XCTestCase {
     override func tearDown() {
-        OHHTTPStubs.removeAllStubs()
+        HTTPStubs.removeAllStubs()
         super.tearDown()
     }
     
@@ -26,12 +29,12 @@ class V5Tests: XCTestCase {
         stub(condition: isHost("api.mapbox.com")
             && isPath("/directions/v5/mapbox/driving/-122.42,37.78;-77.03,38.91.json")
             && containsQueryParams(queryParams)) { _ in
-                let path = Bundle(for: type(of: self)).path(forResource: filePath ?? "v5_driving_dc_\(shapeFormat.rawValue)", ofType: "json")
+                let path = Bundle.module.path(forResource: filePath ?? "v5_driving_dc_\(shapeFormat.rawValue)", ofType: "json")
                 let filePath = URL(fileURLWithPath: path!)
                 let data = try! Data(contentsOf: filePath, options: [])
                 let jsonObject = try! JSONSerialization.jsonObject(with: data, options: [])
                 let transformedData = transformer?(jsonObject as! JSONDictionary) ?? jsonObject
-                return OHHTTPStubsResponse(jsonObject: transformedData, statusCode: 200, headers: ["Content-Type": "application/json"])
+                return HTTPStubsResponse(jsonObject: transformedData, statusCode: 200, headers: ["Content-Type": "application/json"])
         }
         
         let options = RouteOptions(coordinates: [
@@ -223,11 +226,11 @@ class V5Tests: XCTestCase {
         stub(condition: isHost("api.mapbox.com")
             && isPath("/directions/v5/mapbox/driving/-85.206232,39.33841;-85.203991,39.34181;-85.199697,39.342048.json")
             && containsQueryParams(queryParams)) { _ in
-                let path = Bundle(for: type(of: self)).path(forResource: "v5_driving_oldenburg_polyline", ofType: "json")
+                let path = Bundle.module.path(forResource: "v5_driving_oldenburg_polyline", ofType: "json")
                 let filePath = URL(fileURLWithPath: path!)
                 let data = try! Data(contentsOf: filePath, options: [])
                 let jsonObject = try! JSONSerialization.jsonObject(with: data, options: [])
-                return OHHTTPStubsResponse(jsonObject: jsonObject, statusCode: 200, headers: ["Content-Type": "application/json"])
+                return HTTPStubsResponse(jsonObject: jsonObject, statusCode: 200, headers: ["Content-Type": "application/json"])
         }
         
         let waypoints = [
@@ -281,7 +284,7 @@ class V5Tests: XCTestCase {
     }
     
     func testCoding() {
-        let path = Bundle(for: type(of: self)).path(forResource: "v5_driving_dc_polyline", ofType: "json")
+        let path = Bundle.module.path(forResource: "v5_driving_dc_polyline", ofType: "json")
         let filePath = URL(fileURLWithPath: path!)
         let data = try! Data(contentsOf: filePath)
         let options = RouteOptions(coordinates: [

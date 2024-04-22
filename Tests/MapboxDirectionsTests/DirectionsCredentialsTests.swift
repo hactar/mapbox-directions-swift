@@ -1,7 +1,4 @@
 import XCTest
-#if !SWIFT_PACKAGE
-import OHHTTPStubs
-import CoreLocation
 @testable import MapboxDirections
 
 class DirectionsCredentialsTests: XCTestCase {
@@ -19,4 +16,3 @@ class DirectionsCredentialsTests: XCTestCase {
         XCTAssertEqual(credentials.host, host)
     }
 }
-#endif

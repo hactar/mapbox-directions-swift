@@ -1,11 +1,14 @@
 import XCTest
-#if !SWIFT_PACKAGE
+#if !os(Linux)
 import OHHTTPStubs
+#if SWIFT_PACKAGE
+import OHHTTPStubsSwift
+#endif
 @testable import MapboxDirections
 
 class VisualInstructionsTests: XCTestCase {
     override func tearDown() {
-        OHHTTPStubs.removeAllStubs()
+        HTTPStubs.removeAllStubs()
         super.tearDown()
     }
     
@@ -103,8 +106,8 @@ class VisualInstructionsTests: XCTestCase {
         
         stub(condition: isHost("api.mapbox.com")
             && containsQueryParams(queryParams)) { _ in
-                let path = Bundle(for: type(of: self)).path(forResource: "instructions", ofType: "json")
-                return OHHTTPStubsResponse(fileAtPath: path!, statusCode: 200, headers: ["Content-Type": "application/json"])
+                let path = Bundle.module.path(forResource: "instructions", ofType: "json")
+                return HTTPStubsResponse(fileAtPath: path!, statusCode: 200, headers: ["Content-Type": "application/json"])
         }
         
         let startWaypoint = Waypoint(location:  CLLocation(latitude: 37.780602, longitude: -122.431373), heading: nil, name: "the hotel")
@@ -202,8 +205,8 @@ class VisualInstructionsTests: XCTestCase {
         ]
         
         stub(condition: isHost("api.mapbox.com") && containsQueryParams(queryParams)) { _ in
-            let path = Bundle(for: type(of: self)).path(forResource: "subLaneInstructions", ofType: "json")
-            return OHHTTPStubsResponse(fileAtPath: path!, statusCode: 200, headers: ["Content-Type": "application/json"])
+            let path = Bundle.module.path(forResource: "subLaneInstructions", ofType: "json")
+            return HTTPStubsResponse(fileAtPath: path!, statusCode: 200, headers: ["Content-Type": "application/json"])
         }
         
         let startWaypoint =  Waypoint(coordinate: CLLocationCoordinate2D(latitude: 39.132063, longitude: -84.531074))
@@ -277,8 +280,8 @@ class VisualInstructionsTests: XCTestCase {
         ]
         
         stub(condition: isHost("api.mapbox.com") && containsQueryParams(queryParams)) { _ in
-            let path = Bundle(for: type(of: self)).path(forResource: "subVisualInstructions", ofType: "json")
-            return OHHTTPStubsResponse(fileAtPath: path!, statusCode: 200, headers: ["Content-Type": "application/json"])
+            let path = Bundle.module.path(forResource: "subVisualInstructions", ofType: "json")
+            return HTTPStubsResponse(fileAtPath: path!, statusCode: 200, headers: ["Content-Type": "application/json"])
         }
         
         let startWaypoint =  Waypoint(coordinate: CLLocationCoordinate2D(latitude: 37.775469, longitude: -122.449158))

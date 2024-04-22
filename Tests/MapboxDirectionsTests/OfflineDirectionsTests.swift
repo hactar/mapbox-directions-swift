@@ -1,6 +1,9 @@
 import XCTest
-#if !SWIFT_PACKAGE
+#if !os(Linux)
 import OHHTTPStubs
+#if SWIFT_PACKAGE
+import OHHTTPStubsSwift
+#endif
 import Turf
 @testable import MapboxDirections
 
@@ -17,12 +20,12 @@ class OfflineDirectionsTests: XCTestCase {
         let versionsExpectation = expectation(description: "Fetching available versions should return results")
         
         let apiStub = stub(condition: isHost(host)) { _ in
-            let bundle = Bundle(for: type(of: self))
+            let bundle = Bundle.module
             let path = bundle.path(forResource: "versions", ofType: "json")
             let filePath = URL(fileURLWithPath: path!)
             let data = try! Data(contentsOf: filePath)
             let jsonObject = try! JSONSerialization.jsonObject(with: data, options: [])
-            return OHHTTPStubsResponse(jsonObject: jsonObject, statusCode: 200, headers: ["Content-Type": "application/json"])
+            return HTTPStubsResponse(jsonObject: jsonObject, statusCode: 200, headers: ["Content-Type": "application/json"])
         }
         
         directions.fetchAvailableOfflineVersions { (versions, error) in
@@ -30,7 +33,7 @@ class OfflineDirectionsTests: XCTestCase {
             XCTAssertEqual(versions!.first!, "2018-10-16")
             
             versionsExpectation.fulfill()
-            OHHTTPStubs.removeStub(apiStub)
+            HTTPStubs.removeStub(apiStub)
         }
         
         wait(for: [versionsExpectation], timeout: 2)
@@ -45,7 +48,7 @@ class OfflineDirectionsTests: XCTestCase {
         let downloadExpectation = self.expectation(description: "Download tile expectation")
         
         let apiStub = stub(condition: isHost(host)) { _ in
-            let bundle = Bundle(for: type(of: self))
+            let bundle = Bundle.module
             let path = bundle.path(forResource: "2018-10-16-Liechtenstein", ofType: "tar")
 
             let attributes = try! FileManager.default.attributesOfItem(atPath: path!)
@@ -57,7 +60,7 @@ class OfflineDirectionsTests: XCTestCase {
             headers["Accept-Ranges"] = "bytes"
             headers["Content-Disposition"] = "attachment; filename=\"\(version).tar\""
             
-            return OHHTTPStubsResponse(fileAtPath: path!, statusCode: 200, headers: headers)
+            return HTTPStubsResponse(fileAtPath: path!, statusCode: 200, headers: headers)
         }
         
         directions.downloadTiles(in: bounds, version: version, completionHandler: { (url, response, error) in
@@ -66,7 +69,7 @@ class OfflineDirectionsTests: XCTestCase {
             XCTAssertNil(error)
             
             downloadExpectation.fulfill()
-            OHHTTPStubs.removeStub(apiStub)
+            HTTPStubs.removeStub(apiStub)
         })
         
         wait(for: [downloadExpectation], timeout: 60)

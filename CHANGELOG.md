@@ -1,5 +1,43 @@
 # Changes to Mapbox Directions for Swift
 
+## v1.2.0
+
+### Packaging
+
+* Added support for building and running on any Linux distribution supported by Swift. ([#488](https://github.com/mapbox/mapbox-directions-swift/pull/488))
+* Added the `MapboxDirectionsCLI` command line tool that round-trips Mapbox Directions API responses between JSON format and Swift model objects. ([#469](https://github.com/mapbox/mapbox-directions-swift/pull/469))
+
+### Other changes
+
+* Added the `RouteStep.segmentIndicesByIntersection` property for associating `Intersection`s with portions of the step’s shape. ([#490](https://github.com/mapbox/mapbox-directions-swift/pull/490))
+* Added the `Intersection.outletMapboxStreetsRoadClass` property that indicates a more detailed road classification than the existing `Intersection.outletRoadClasses` property. ([#507](https://github.com/mapbox/mapbox-directions-swift/pull/507]))
+* Added the `RouteLeg.incidents` property that indicates known traffic incidents, toll collection points, rest areas, and border crossings along the route leg. ([#466](https://github.com/mapbox/mapbox-directions-swift/pull/466), [#506](https://github.com/mapbox/mapbox-directions-swift/pull/506))
+* Added the `RouteLeg.regionCode(atStepIndex:intersectionIndex:)` method and `Intersection.regionCode` property to get the administrative region where an intersection is located, as well as a `RouteLeg.administrativeRegions` property that indicates the administrative regions traversed by the route leg. ([#466](https://github.com/mapbox/mapbox-directions-swift/pull/466), [#485](https://github.com/mapbox/mapbox-directions-swift/pull/485), [#506](https://github.com/mapbox/mapbox-directions-swift/pull/506))
+* Added the `Intersection.tunnelName`, `Intersection.tollCollection`, `Intersection.restStop`, and `Intersection.isUrban` properties. ([#466](https://github.com/mapbox/mapbox-directions-swift/pull/466), [#506](https://github.com/mapbox/mapbox-directions-swift/pull/506))
+* The `CongestionLevel` enumeration now conforms to the `CaseIterable` protocol. ([#500](https://github.com/mapbox/mapbox-directions-swift/pull/500))
+
+## v1.1.0
+
+* Added the `DirectionsResult.typicalTravelTime`, `RouteLeg.typicalTravelTime` and `RouteStep.typicalTravelTime` properties that indicate the typical travel time, as opposed to the current expected travel time. ([#462](https://github.com/mapbox/mapbox-directions-swift/pull/462))
+* Fixed an error that occurred when setting the `Waypoint.separatesLegs` property to `true` and setting the `Waypoint.targetCoordinate` property. ([#480](https://github.com/mapbox/mapbox-directions-swift/pull/480))
+* `Directions.fetchAvailableOfflineVersions(completionHandler:)` now calls its completion handler on the main queue consistently. ([#475](https://github.com/mapbox/mapbox-directions-swift/pull/475))
+* Upgraded to Polyline v5.0.0. ([#487](https://github.com/mapbox/mapbox-directions-swift/pull/487))
+
+## v1.0.0
+
+* Added the `Directions.refreshRoute(responseIdentifier:routeIndex:fromLegAtIndex:completionHandler:)` method for refreshing attributes along the legs of a route and the `Route.refreshLegAttributes(from:)` method for merging the refreshed attributes into an existing route. To enable route refreshing for the routes in a particular route response, set `RouteOptions.refreshingEnabled` to `true` before passing the `RouteOptions` object into `Directions.calculate(_:completionHandler:)`. ([#420](https://github.com/mapbox/mapbox-directions-swift/pull/420))
+* Fixed a crash that could occur if the Mapbox Directions API includes unrecognized `RoadClasses` values in its response. ([#450](https://github.com/mapbox/mapbox-directions-swift/pull/450))
+* Fixed malformed `RouteStep.shape` values that could occur when `RouteStep.maneuverType` is `ManeuverType.arrive`, `DirectionsOptions.shapeFormat` is `RouteShapeFormat.polyline6`, and the Mapbox Directions API returns certain encoded Polyline strings. ([#456](https://github.com/mapbox/mapbox-directions-swift/pull/456))
+* Restored the `DirectionsOptions.urlQueryItems` property so that subclasses of `RouteOptions` and `MatchOptions` can add any additional URL query parameters that are supported by the Mapbox Directions and Map Matching APIs. ([#461](https://github.com/mapbox/mapbox-directions-swift/pull/461))
+
+## v0.33.2
+
+* Fixed an issue where waypoints in a `RouteResponse` did not persist the `Waypoint.targetCoordinate`, `Waypoint.heading`, `Waypoint.headingAccuracy`, and `Waypoint.allowsArrivingOnOppositeSide` properties from the initial `RouteOptions` object.
+
+## v0.33.1
+
+* Fixed an issue where `RouteResponse(matching:options:credentials:)` and `Directions.calculateRoutes(matching:completionHandler:)` resulted in misshappen `Route.shape`s and `RouteStep.shape`s in the Atlantic Ocean if `MatchOptions.shapeFormat` was set to `RouteShapeFormat.polyline6`. ([#437](https://github.com/mapbox/mapbox-directions-swift/pull/437)) 
+
 ## v0.33.0
 
 * Fixed an issue where decoding and reencoding a JSON-formatted response from the Mapbox Directions API would cause the `voiceLocale` property to be omitted from route objects. ([#424](https://github.com/mapbox/mapbox-directions-swift/pull/424))
@@ -10,6 +48,10 @@
 
 * Removed the `CoordinateBounds` struct in favor of `BoundingBox` from Turf. ([#427](https://github.com/mapbox/mapbox-directions-swift/pull/427))
 * Added the `VisualInstructionBanner.quaternaryInstruction` property and `VisualInstruction.Component.guidanceView(image:alternativeText:)` enumeration case to represent a detailed image of an upcoming junction. ([#425](https://github.com/mapbox/mapbox-directions-swift/pull/425))
+
+## v0.31.1
+
+* Fixed an issue where `RouteResponse(matching:options:credentials:)` and `Directions.calculateRoutes(matching:completionHandler:)` resulted in misshappen `Route.shape`s and `RouteStep.shape`s in the Atlantic Ocean if `MatchOptions.shapeFormat` was set to `RouteShapeFormat.polyline6`. ([#437](https://github.com/mapbox/mapbox-directions-swift/pull/437)) 
 
 ## v0.31.0
 

@@ -1,4 +1,9 @@
 import XCTest
+#if canImport(CoreLocation)
+import CoreLocation
+#else
+import Turf
+#endif
 @testable import MapboxDirections
 
 class IntersectionTests: XCTestCase {
@@ -11,6 +16,10 @@ class IntersectionTests: XCTestCase {
                 "bearings": [80],
                 "location": [13.426579, 52.508068],
                 "classes": ["toll", "restricted"],
+                "mapbox_streets_v8": [
+                    "class": "street_limited"
+                ],
+                "toll_collection": ["type": "toll_booth"],
             ],
             [
                 "out": 1,
@@ -46,6 +55,7 @@ class IntersectionTests: XCTestCase {
             XCTAssertEqual(intersection.outletRoadClasses, [.toll, .restricted])
             XCTAssertEqual(intersection.headings, [80.0])
             XCTAssertEqual(intersection.location, CLLocationCoordinate2D(latitude: 52.508068, longitude: 13.426579))
+            XCTAssertEqual(intersection.outletMapboxStreetsRoadClass, MapboxStreetsRoadClass.streetLimited)
         }
         
         intersections = [
@@ -56,7 +66,12 @@ class IntersectionTests: XCTestCase {
                          outletIndexes: IndexSet([0]),
                          approachLanes: nil,
                          usableApproachLanes: nil,
-                         outletRoadClasses: [.toll, .restricted]),
+                         outletRoadClasses: [.toll, .restricted],
+                         tollCollection: TollCollection(type: .booth),
+                         tunnelName: nil,
+                         restStop: nil,
+                         isUrban: nil,
+                         outletMapboxStreetsRoadClass: .streetLimited),
             Intersection(location: CLLocationCoordinate2D(latitude: 52.508022, longitude: 13.426688),
                          headings: [30.0, 120.0, 300.0],
                          approachIndex: 2,
@@ -64,7 +79,11 @@ class IntersectionTests: XCTestCase {
                          outletIndexes: IndexSet([1, 2]),
                          approachLanes: nil,
                          usableApproachLanes: nil,
-                         outletRoadClasses: nil),
+                         outletRoadClasses: nil,
+                         tollCollection: nil,
+                         tunnelName: nil,
+                         restStop: nil,
+                         isUrban: nil),
             Intersection(location: CLLocationCoordinate2D(latitude: 39.102483, longitude: -84.503956),
                          headings: [45, 135, 255],
                          approachIndex: 2,
@@ -72,7 +91,11 @@ class IntersectionTests: XCTestCase {
                          outletIndexes: IndexSet([0, 1]),
                          approachLanes: [.straightAhead, [.straightAhead, .right]],
                          usableApproachLanes: IndexSet([0, 1]),
-                         outletRoadClasses: nil)
+                         outletRoadClasses: nil,
+                         tollCollection: nil,
+                         tunnelName: nil,
+                         restStop: nil,
+                         isUrban: nil)
         ]
         
         let encoder = JSONEncoder()
